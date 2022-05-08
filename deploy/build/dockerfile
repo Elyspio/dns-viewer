@@ -2,12 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS builder-back
 WORKDIR /app
 
-COPY back/ExampleApi.sln ./
-COPY back/Core/Example.Api.Core.csproj ./Core/
-COPY back/Abstractions/Example.Api.Abstractions.csproj ./Abstractions/
-COPY back/Db/Example.Api.Db.csproj ./Db/
-COPY back/Adapters/Example.Api.Adapters.csproj ./Adapters/
-COPY back/Web/Example.Api.Web.csproj ./Web/
+COPY back/DnsViewer.sln ./
+COPY back/Core/DnsViewer.Api.Core.csproj ./Core/
+COPY back/Abstractions/DnsViewer.Api.Abstractions.csproj ./Abstractions/
+COPY back/Adapters/DnsViewer.Api.Adapters.csproj ./Adapters/
+COPY back/Web/DnsViewer.Api.Web.csproj ./Web/
 
 RUN dotnet restore
 
@@ -39,5 +38,5 @@ COPY --from=builder-front /front/build /back/wwwroot
 ENV FRONT_PATH /back/wwwroot
 
 EXPOSE 4003
-ENTRYPOINT ["dotnet", "Example.Api.Web.dll"]
+ENTRYPOINT ["dotnet", "DnsViewer.Api.Web.dll"]
 

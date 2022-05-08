@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-    react-api-template:
-        container_name: react-api-template
+    dns-viewer:
+        container_name: item-viewer
         image: mongo
         restart: always
         environment:
