@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Assemblers\**" />
+    <Content Remove="Assemblers\**" />
+    <EmbeddedResource Remove="Assemblers\**" />
+    <None Remove="Assemblers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
@@ -20,16 +27,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Example.Api.Abstractions.csproj" />
-    <ProjectReference Include="..\Adapters\Example.Api.Adapters.csproj" />
-    <ProjectReference Include="..\Core\Example.Api.Core.csproj" />
-    <ProjectReference Include="..\Db\Example.Api.Db.csproj" />
+    <Folder Include="Filters\" />
+    <Folder Include="Models\Requests\" />
+    <Folder Include="Server\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assemblers\" />
-    <Folder Include="Filters\" />
-    <Folder Include="Server\" />
+    <ProjectReference Include="..\Abstractions\DnsViewer.Api.Abstractions.csproj" />
+    <ProjectReference Include="..\Adapters\DnsViewer.Api.Adapters.csproj" />
+    <ProjectReference Include="..\Core\DnsViewer.Api.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dnsmasq.conf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

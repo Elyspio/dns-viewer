@@ -1,100 +1,99 @@
-﻿using Example.Api.Abstractions.Interfaces.Services;
-using Example.Api.Web.Utils;
+﻿using DnsViewer.Api.Abstractions.Interfaces.Services;
+using DnsViewer.Api.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Example.Api.Web.Filters
+namespace DnsViewer.Api.Web.Filters;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public class RequireAuthAttribute : ActionFilterAttribute
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-	public class RequireAuthAttribute : ActionFilterAttribute
-	{
-		private const string AuthenticationTokenField = "authentication-token";
+    private const string AuthenticationTokenField = "authentication-token";
 
 
-		public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-		{
-			var authenticationService = context.HttpContext.RequestServices.GetService<IAuthenticationService>();
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var authenticationService = context.HttpContext.RequestServices.GetService<IAuthenticationService>();
 
-			if (authenticationService == default)
-			{
-				context.Result = new StatusCodeResult(500);
-				throw new Exception("Dependency injection error, Authentication Service is not available");
-			}
+        if (authenticationService == default)
+        {
+            context.Result = new StatusCodeResult(500);
+            throw new Exception("Dependency injection error, Authentication Service is not available");
+        }
 
-			var cookie = context.HttpContext.Request.Cookies[AuthenticationTokenField];
-			var header = context.HttpContext.Request.Headers[AuthenticationTokenField].FirstOrDefault();
+        var cookie = context.HttpContext.Request.Cookies[AuthenticationTokenField];
+        var header = context.HttpContext.Request.Headers[AuthenticationTokenField].FirstOrDefault();
 
-			var token = cookie ?? header;
+        var token = cookie ?? header;
 
-			if (token == default)
-			{
-				context.Result = new UnauthorizedObjectResult("Token not found");
-				return;
-			}
-
-
-			if (!await authenticationService.IsLogged(token))
-			{
-				context.Result = new StatusCodeResult(403);
-				return;
-			}
-
-			var username = await authenticationService.GetUsername(token);
-			context.HttpContext.Request.Headers[AuthUtility.UsernameField] = username;
-			context.HttpContext.Request.Headers[AuthUtility.TokenField] = token;
-			await next();
-		}
+        if (token == default)
+        {
+            context.Result = new UnauthorizedObjectResult("Token not found");
+            return;
+        }
 
 
-		public class Swagger : IOperationFilter
-		{
-			public void Apply(OpenApiOperation operation, OperationFilterContext context)
-			{
-				context.ApiDescription.TryGetMethodInfo(out var info);
+        if (!await authenticationService.IsLogged(token))
+        {
+            context.Result = new StatusCodeResult(403);
+            return;
+        }
 
-				// Get method attributes
-				var attributes = context.MethodInfo.CustomAttributes.ToList();
+        var username = await authenticationService.GetUsername(token);
+        context.HttpContext.Request.Headers[AuthUtility.UsernameField] = username;
+        context.HttpContext.Request.Headers[AuthUtility.TokenField] = token;
+        await next();
+    }
 
-				// Add class' attributes
-				if (info.DeclaringType != null) attributes.AddRange(info.DeclaringType.CustomAttributes);
 
-				if (attributes.All(attribute => attribute.AttributeType != typeof(RequireAuthAttribute))) return;
+    public class Swagger : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            context.ApiDescription.TryGetMethodInfo(out var info);
 
-				operation.Parameters ??= new List<OpenApiParameter>();
+            // Get method attributes
+            var attributes = context.MethodInfo.CustomAttributes.ToList();
 
-				operation.Parameters.Add(new OpenApiParameter
-					{
-						Name = AuthenticationTokenField,
-						In = ParameterLocation.Header,
-						Required = false,
-						AllowEmptyValue = true,
-						Description = "Authentication Token",
-						Schema = new OpenApiSchema
-						{
-							Type = "string"
-						}
-					}
-				);
+            // Add class' attributes
+            if (info.DeclaringType != null) attributes.AddRange(info.DeclaringType.CustomAttributes);
 
-				operation.Parameters.Add(new OpenApiParameter
-					{
-						Name = AuthenticationTokenField,
-						In = ParameterLocation.Cookie,
-						Required = false,
-						AllowEmptyValue = true,
-						Description = "Authentication Token",
-						Schema = new OpenApiSchema
-						{
-							Type = "string"
-						}
-					}
-				);
+            if (attributes.All(attribute => attribute.AttributeType != typeof(RequireAuthAttribute))) return;
 
-				operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
-				operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
-			}
-		}
-	}
+            operation.Parameters ??= new List<OpenApiParameter>();
+
+            operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = AuthenticationTokenField,
+                    In = ParameterLocation.Header,
+                    Required = false,
+                    AllowEmptyValue = true,
+                    Description = "Authentication Token",
+                    Schema = new OpenApiSchema
+                    {
+                        Type = "string"
+                    }
+                }
+            );
+
+            operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = AuthenticationTokenField,
+                    In = ParameterLocation.Cookie,
+                    Required = false,
+                    AllowEmptyValue = true,
+                    Description = "Authentication Token",
+                    Schema = new OpenApiSchema
+                    {
+                        Type = "string"
+                    }
+                }
+            );
+
+            operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
+            operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
+        }
+    }
 }
