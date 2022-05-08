@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import axios from "axios";
-import { TodoApi } from "./generated";
+import { DnsApi } from "./generated";
 
 const instance = axios.create({
 	withCredentials: true,
@@ -9,6 +9,6 @@ const instance = axios.create({
 @injectable()
 export class BackendApiClient {
 	public readonly clients = {
-		todo: new TodoApi(undefined, window.config.endpoints.core, instance),
+		dns: new DnsApi(undefined, window.config.endpoints.core, instance),
 	};
 }

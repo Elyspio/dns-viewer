@@ -32,4 +32,3 @@ export function useMenu() {
 		onContextMenu: handleContextMenu,
 	};
 }
-

@@ -2,7 +2,7 @@ import * as React from "react";
 import "./Application.scss";
 import Brightness5Icon from "@mui/icons-material/Brightness5";
 import Brightness3Icon from "@mui/icons-material/Brightness3";
-import Example from "./test/Test";
+import { Dns } from "./test/Dns";
 import { useAppSelector } from "../../store";
 import { toggleTheme } from "../../store/module/theme/theme.action";
 import { createDrawerAction, withDrawer } from "./utils/drawer/Drawer.hoc";
@@ -47,9 +47,9 @@ function Application() {
 	}
 
 	const drawer = withDrawer({
-		component: <Example />,
+		component: <Dns />,
 		actions,
-		title: "Example",
+		title: "Dns",
 	});
 
 	return (

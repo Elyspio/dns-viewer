@@ -18,7 +18,10 @@ declare module "@mui/styles/defaultTheme" {
 }
 
 function Wrapper() {
-	const { theme, current } = useAppSelector((state) => ({ theme: state.theme.current === "dark" ? themes.dark : themes.light, current: state.theme.current }));
+	const { theme, current } = useAppSelector((state) => ({
+		theme: state.theme.current === "dark" ? themes.dark : themes.light,
+		current: state.theme.current,
+	}));
 
 	return (
 		<StyledEngineProvider injectFirst>
