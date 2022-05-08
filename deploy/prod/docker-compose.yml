@@ -1,0 +1,46 @@
+version: "3"
+services:
+    react-api-template:
+        container_name: "react-api-template"
+        image: elyspio/react-api-template
+        volumes:
+            - "./config/front/conf.js:/back/wwwroot/conf.js"
+            - "./config/back/appsettings.json:/back/appsettings.json"
+        networks:
+            - external
+            - react-api-template
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=external"
+            - "traefik.http.middlewares.react-api-template-prefix.stripprefix.prefixes=/react-api-template"
+            - "traefik.http.routers.react-api-template.middlewares=react-api-template-prefix@docker"
+            - "traefik.http.routers.react-api-template.rule=PathPrefix(`/react-api-template`)"
+            - "traefik.http.services.react-api-template.loadbalancer.server.port=4000"
+            - "traefik.http.routers.react-api-template.entrypoints=external"
+        depends_on:
+            - react-api-template-db
+
+    react-api-template-db:
+        container_name: react-api-template-db
+        image: mongo:latest
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+            MONGO_INITDB_DATABASE: ${DB_DATABASE}
+
+        ports:
+            - "27020:27017"
+        networks:
+            - internal
+            - react-api-template
+        volumes:
+            - "./db:/data/db"
+
+networks:
+    react-api-template:
+        name: react-api-template
+    internal:
+        external: true
+    external:
+        external: true
