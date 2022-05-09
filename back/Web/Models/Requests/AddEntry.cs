@@ -2,7 +2,4 @@
 
 namespace DnsViewer.Api.Web.Models.Requests;
 
-public class AddEntry: DnsEntry
-{
-    
-}
+public class AddEntry : DnsEntry { }

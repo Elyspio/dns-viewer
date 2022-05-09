@@ -72,11 +72,13 @@ public class ServerBuilder
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options => {
                 if (builder.Environment.IsProduction())
+                {
                     options.AddServer(new OpenApiServer
                         {
                             Url = appPath
                         }
                     );
+                }
 
                 options.SwaggerDoc("v1", new OpenApiInfo {Title = "Example API", Version = "1"});
 
@@ -87,7 +89,10 @@ public class ServerBuilder
         );
 
         // Setup SPA Serving
-        if (builder.Environment.IsProduction()) Console.WriteLine($"Server in production, serving SPA from {frontPath} folder");
+        if (builder.Environment.IsProduction())
+        {
+            Console.WriteLine($"Server in production, serving SPA from {frontPath} folder");
+        }
 
         Application = builder.Build();
     }

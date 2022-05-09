@@ -9,11 +9,9 @@ namespace DnsViewer.Api.Core.Services;
 
 public class DnsService : IDnsService
 {
-    private readonly ILogger<DnsService> logger;
-    private readonly DnsmasqConfig config;
-
-
     private readonly List<DnsEntry> cache;
+    private readonly DnsmasqConfig config;
+    private readonly ILogger<DnsService> logger;
 
     public DnsService(ILogger<DnsService> logger, IConfiguration configuration)
     {
@@ -66,9 +64,7 @@ public class DnsService : IDnsService
     private async Task Write()
     {
         var str = new StringBuilder();
-        cache.ForEach(entry => {
-            str.AppendLine($"address=/{entry.Host}/{entry.Ip}");
-        });
+        cache.ForEach(entry => { str.AppendLine($"address=/{entry.Host}/{entry.Ip}"); });
         await File.WriteAllTextAsync(config.ConfigPath, str.ToString());
     }
 }

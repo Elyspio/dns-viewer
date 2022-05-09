@@ -58,9 +58,15 @@ public class RequireAuthAttribute : ActionFilterAttribute
             var attributes = context.MethodInfo.CustomAttributes.ToList();
 
             // Add class' attributes
-            if (info.DeclaringType != null) attributes.AddRange(info.DeclaringType.CustomAttributes);
+            if (info.DeclaringType != null)
+            {
+                attributes.AddRange(info.DeclaringType.CustomAttributes);
+            }
 
-            if (attributes.All(attribute => attribute.AttributeType != typeof(RequireAuthAttribute))) return;
+            if (attributes.All(attribute => attribute.AttributeType != typeof(RequireAuthAttribute)))
+            {
+                return;
+            }
 
             operation.Parameters ??= new List<OpenApiParameter>();
 

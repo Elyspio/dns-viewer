@@ -10,11 +10,6 @@ public class DnsViewApiCoreModule : IDotnetModule
     {
         var nsp = typeof(DnsViewApiCoreModule).Namespace!;
         var baseNamespace = nsp[..nsp.LastIndexOf(".")];
-        services.Scan(scan => scan
-            .FromAssemblyOf<DnsViewApiCoreModule>()
-            .AddClasses(classes => classes.InNamespaces(baseNamespace + ".Services"))
-            .AsImplementedInterfaces()
-            .WithSingletonLifetime()
-        );
+        services.Scan(scan => scan.FromAssemblyOf<DnsViewApiCoreModule>().AddClasses(classes => classes.InNamespaces(baseNamespace + ".Services")).AsImplementedInterfaces().WithSingletonLifetime());
     }
 }

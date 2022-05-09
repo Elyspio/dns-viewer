@@ -1,6 +1,6 @@
 ﻿using DnsViewer.Api.Abstractions.Interfaces.Injections;
-using DnsViewer.Api.Adapters.Configs;
 using DnsViewer.Api.Adapters.AuthenticationApi;
+using DnsViewer.Api.Adapters.Configs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

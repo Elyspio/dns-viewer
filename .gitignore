@@ -18,3 +18,4 @@ back/*/obj
 deploy/prod/.env
 deploy/prod/config/front/conf.js
 deploy/prod/config/back/appsettings.json
+back/Web/dnsmasq.conf
