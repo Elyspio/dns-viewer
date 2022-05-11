@@ -2,6 +2,7 @@
 using DnsViewer.Api.Abstractions.Transports;
 using DnsViewer.Api.Web.Filters;
 using DnsViewer.Api.Web.Models.Requests;
+using DnsViewer.Api.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -31,14 +32,15 @@ public class DnsController : ControllerBase
     [SwaggerResponse(201, type: typeof(DnsEntry))]
     public async Task<IActionResult> Add(AddEntry payload)
     {
-        return Created($"{payload.Host}", await dnsService.Add(payload.Host, payload.Ip));
+        var dnsEntry = await dnsService.Add(payload.Host, payload.Ip, AuthUtility.GetToken(Request));
+        return Created($"{payload.Host}", dnsEntry);
     }
 
     [HttpDelete("{host}")]
     [SwaggerResponse(204)]
     public async Task<IActionResult> Delete(string host)
     {
-        await dnsService.Delete(host);
+        await dnsService.Delete(host, AuthUtility.GetToken(Request));
         return NoContent();
     }
 }

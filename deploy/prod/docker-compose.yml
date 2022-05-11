@@ -10,6 +10,8 @@ services:
         networks:
             - external
             - dns-viewer
+            - runner
+            - authentication
         labels:
             - "traefik.enable=true"
             - "traefik.docker.network=external"
@@ -25,4 +27,8 @@ networks:
     internal:
         external: true
     external:
+        external: true
+    runner:
+        external: true
+    authentication:
         external: true

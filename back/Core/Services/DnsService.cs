@@ -2,6 +2,7 @@
 using DnsViewer.Api.Abstractions.Interfaces.Services;
 using DnsViewer.Api.Abstractions.Transports;
 using DnsViewer.Api.Adapters.Configs;
+using DnsViewer.Api.Adapters.RunnerApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -12,10 +13,13 @@ public class DnsService : IDnsService
     private readonly List<DnsEntry> cache;
     private readonly DnsmasqConfig config;
     private readonly ILogger<DnsService> logger;
+    private readonly IRunnerClient runnerApi;
 
-    public DnsService(ILogger<DnsService> logger, IConfiguration configuration)
+
+    public DnsService(ILogger<DnsService> logger, IConfiguration configuration, IRunnerClient runnerApi)
     {
         this.logger = logger;
+        this.runnerApi = runnerApi;
         config = new DnsmasqConfig();
         cache = new List<DnsEntry>();
         configuration.GetSection(DnsmasqConfig.Section).Bind(config);
@@ -23,11 +27,11 @@ public class DnsService : IDnsService
     }
 
 
-    public async Task<DnsEntry> Add(string host, string ip)
+    public async Task<DnsEntry> Add(string host, string ip, string token)
     {
         var dnsEntry = new DnsEntry {Host = host, Ip = ip};
         cache.Add(dnsEntry);
-        await Write();
+        await Write(token);
         return dnsEntry;
     }
 
@@ -36,10 +40,10 @@ public class DnsService : IDnsService
         return await Task.FromResult(cache);
     }
 
-    public async Task Delete(string host)
+    public async Task Delete(string host, string token)
     {
         cache.RemoveAt(cache.FindIndex(entry => entry.Host == host));
-        await Write();
+        await Write(token);
     }
 
 
@@ -61,10 +65,21 @@ public class DnsService : IDnsService
         cache.AddRange(data);
     }
 
-    private async Task Write()
+    private async Task Write(string token)
     {
         var str = new StringBuilder();
         cache.ForEach(entry => { str.AppendLine($"address=/{entry.Host}/{entry.Ip}"); });
         await File.WriteAllTextAsync(config.ConfigPath, str.ToString());
+
+        if (config.Reload)
+        {
+            await runnerApi.RunAsync(new RunRequest
+                {
+                    Command = "service dnsmasq restart",
+                    Cwd = "/",
+                    Admin = true
+                }, token
+            );
+        }
     }
 }

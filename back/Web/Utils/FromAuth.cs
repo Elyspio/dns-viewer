@@ -1,10 +1,10 @@
 ﻿namespace DnsViewer.Api.Web.Utils;
 
-public class AuthUtility
+public static class AuthUtility
 {
-    public static readonly string UsernameField = "auth_username";
+    internal static readonly string UsernameField = "auth_username";
 
-    public static readonly string TokenField = "auth_token";
+    internal static readonly string TokenField = "auth_token";
 
     public static string GetUsername(HttpRequest request)
     {

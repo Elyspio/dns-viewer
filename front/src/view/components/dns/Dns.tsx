@@ -28,6 +28,7 @@ import { bindActionCreators } from "redux";
 import { addEntry, getEntries } from "../../../store/module/dns/dns.actions";
 import { Add } from "@mui/icons-material";
 import { useModal } from "../../hooks/useModal";
+import { AuthenticationEvents } from "../../../core/services/authentication.service";
 
 export const Dns = () => {
 	const headColor = useAppSelector((state) => (state.theme.current === "dark" ? "#000" : "#d8fafd"));
@@ -49,6 +50,10 @@ export const Dns = () => {
 
 	useEffect(() => {
 		actions.getEntries();
+
+		AuthenticationEvents.on("login", () => {
+			actions.getEntries();
+		});
 	}, [actions]);
 
 	const [host, setHost] = React.useState("");
@@ -60,7 +65,7 @@ export const Dns = () => {
 		setClose();
 		await actions.addEntry({ ip, host });
 		setHost("");
-	}, [actions, ip, setClose]);
+	}, [actions, ip, host, setClose]);
 
 	const isIpValid = useMemo(() => /[1-9]\d{0,2}.[1-9]\d{0,2}.[1-9]\d{0,2}.[1-9]\d{0,2}/.test(ip), [ip]);
 
@@ -117,7 +122,7 @@ export const Dns = () => {
 					<Button color={"inherit"} onClick={setClose}>
 						Cancel
 					</Button>
-					<Button color={"primary"} onClick={add}>
+					<Button color={"primary"} disabled={!isIpValid} onClick={add}>
 						Add
 					</Button>
 				</DialogActions>

@@ -1,0 +1,209 @@
+﻿{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Api documentation",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/run": {
+      "post": {
+        "tags": [
+          "Runner"
+        ],
+        "operationId": "run",
+        "parameters": [
+          {
+            "name": "authentication-token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authentication-token",
+            "in": "cookie",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "You are not logged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RunResponse": {
+        "type": "object",
+        "required": [
+          "code",
+          "stderr",
+          "stdout"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "multipleOf": 1.0
+          },
+          "error": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExecException"
+              }
+            ]
+          },
+          "signal": {
+            "type": "string",
+            "nullable": true
+          },
+          "stderr": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stdout": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ExecException": {
+        "type": "object",
+        "properties": {
+          "cmd": {
+            "type": "string",
+            "nullable": true
+          },
+          "killed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "code": {
+            "type": "integer",
+            "multipleOf": 1.0,
+            "nullable": true
+          },
+          "signal": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "required": [
+          "name",
+          "message",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The error name",
+            "default": "UNAUTHORIZED",
+            "minLength": 1,
+            "example": "UNAUTHORIZED"
+          },
+          "message": {
+            "type": "string",
+            "description": "An error message",
+            "minLength": 1
+          },
+          "status": {
+            "type": "number",
+            "description": "The status code of the exception",
+            "default": 401,
+            "example": 401
+          },
+          "errors": {
+            "type": "array",
+            "description": "A list of related errors",
+            "items": {
+              "$ref": "#/components/schemas/GenericError"
+            }
+          },
+          "stack": {
+            "type": "string",
+            "description": "The stack trace (only in development mode)"
+          }
+        }
+      },
+      "GenericError": {
+        "type": "object",
+        "required": [
+          "name",
+          "message"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The error name",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "description": "An error message",
+            "minLength": 1
+          }
+        }
+      },
+      "RunRequest": {
+        "type": "object",
+        "required": [
+          "cwd",
+          "command"
+        ],
+        "properties": {
+          "cwd": {
+            "type": "string",
+            "minLength": 1
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "admin": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Runner"
+    }
+  ]
+}
