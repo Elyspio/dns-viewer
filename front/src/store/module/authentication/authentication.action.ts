@@ -89,7 +89,7 @@ export const getUserInfos = createAsyncThunk("authentication/getUserInfos", asyn
 });
 
 export const logout = createAsyncThunk("authentication/logout", async () => {
-	await authentication.logout();
+	await toast.promise(authentication.logout(), { success: "Logged out" });
 	AuthenticationEvents.emit("logout");
 });
 
