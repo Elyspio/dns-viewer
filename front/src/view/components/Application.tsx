@@ -7,10 +7,11 @@ import { useAppSelector } from "../../store";
 import { toggleTheme } from "../../store/module/theme/theme.action";
 import { createDrawerAction, withDrawer } from "./utils/drawer/Drawer.hoc";
 import { Box } from "@mui/material";
-import { login, logout } from "../../store/module/authentication/authentication.action";
+import { login, logout, silentLogin } from "../../store/module/authentication/authentication.action";
 import { Login, Logout } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
+import { RequireLogin } from "./utils/login/RequireLogin";
 
 function Application() {
 	const dispatch = useDispatch();
@@ -47,7 +48,7 @@ function Application() {
 	}
 
 	const drawer = withDrawer({
-		component: <Dns />,
+		component: logged ? <Dns /> : <RequireLogin />,
 		actions,
 		title: "Dns",
 	});
