@@ -23,7 +23,7 @@ function waitForLogin(page: Window) {
 
 		const func = () => {
 			console.debug("Checking if user is logged from local storage");
-			let isPresent = localStorages.validation.retrieve(undefined) !== undefined;
+			let isPresent = localStorages.validation.retrieve() !== undefined;
 			if (isPresent) {
 				localStorages.validation.remove();
 				clearInter();
@@ -82,9 +82,10 @@ export const getUserInfos = createAsyncThunk("authentication/getUserInfos", asyn
 
 	const [settings] = await Promise.all([authentication.getSettings(username)]);
 
-	localStorages.settings.store(undefined, settings);
+	localStorages.settings.store(settings);
 
 	AuthenticationEvents.emit("login", username);
+
 	return { settings, username };
 });
 

@@ -4,7 +4,7 @@ import React from "react";
  *
  * @param defaultState initial state of modal (open or not)
  */
-export function useModal(defaultState: boolean) {
+export function useModal(defaultState: boolean = false) {
 	const [state, setOpen] = React.useState<boolean>(defaultState);
 
 	const open = (e?: any) => {

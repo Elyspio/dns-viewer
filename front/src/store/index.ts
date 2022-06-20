@@ -12,14 +12,14 @@ const store = configureStore({
 		dns: dnsReducer,
 	},
 	devTools: process.env.NODE_ENV !== "production",
-	middleware: (getDefaultMiddleware) => [...getDefaultMiddleware({ thunk: { extraArgument: { container } } })],
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: { extraArgument: { container } } }),
 });
 
 export type StoreState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type ExtraArgument = { container: typeof container };
 
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreState> = useSelector;
 
 export default store;

@@ -15,16 +15,23 @@ const slice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
+		function sort(state: DnsState) {
+			state.entries = [...state.entries.sort((a, b) => [...a.host].reverse().join("").localeCompare([b.host].reverse().join("")))];
+		}
+
 		builder.addCase(getEntries.fulfilled, (state, action) => {
 			state.entries = action.payload;
+			sort(state);
 		});
 
 		builder.addCase(addEntry.fulfilled, (state, action) => {
 			state.entries.push(action.payload);
+			sort(state);
 		});
 
 		builder.addCase(deleteEntry.fulfilled, (state, action) => {
 			state.entries = state.entries.filter((entry) => entry.host !== action.meta.arg);
+			sort(state);
 		});
 	},
 });

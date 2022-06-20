@@ -3,18 +3,17 @@ import "./Application.scss";
 import Brightness5Icon from "@mui/icons-material/Brightness5";
 import Brightness3Icon from "@mui/icons-material/Brightness3";
 import { Dns } from "./dns/Dns";
-import { useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleTheme } from "../../store/module/theme/theme.action";
 import { createDrawerAction, withDrawer } from "./utils/drawer/Drawer.hoc";
 import { Box } from "@mui/material";
-import { login, logout, silentLogin } from "../../store/module/authentication/authentication.action";
+import { login, logout } from "../../store/module/authentication/authentication.action";
 import { Login, Logout } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { RequireLogin } from "./utils/login/RequireLogin";
 
 function Application() {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const { theme, themeIcon, logged } = useAppSelector((s) => ({
 		theme: s.theme.current,
@@ -22,7 +21,18 @@ function Application() {
 		logged: s.authentication.logged,
 	}));
 
-	const storeActions = React.useMemo(() => bindActionCreators({ toggleTheme, logout, login }, dispatch), [dispatch]);
+	const storeActions = React.useMemo(
+		() =>
+			bindActionCreators(
+				{
+					toggleTheme,
+					logout,
+					login,
+				},
+				dispatch
+			),
+		[dispatch]
+	);
 
 	const actions = [
 		createDrawerAction(theme === "dark" ? "Light Mode" : "Dark Mode", {

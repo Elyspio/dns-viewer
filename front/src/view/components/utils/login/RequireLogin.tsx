@@ -10,7 +10,7 @@ export function RequireLogin() {
 
 	React.useEffect(() => {
 		storeActions.silentLogin();
-	}, []);
+	}, [storeActions]);
 
 	return (
 		<Paper>
